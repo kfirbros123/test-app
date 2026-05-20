@@ -25,9 +25,9 @@ podTemplate(cloud: 'kubernetes', containers: [
 	    checkout scm
           }
         } // end checkout
-
+container('docker') {
         stage('build docker image ${appimage}:${apptag}') {
-            container('docker') {
+            
               echo "--------------------------------------------------------------"
               echo "Building docker image..."
               echo "--------------------------------------------------------------"
@@ -39,7 +39,7 @@ podTemplate(cloud: 'kubernetes', containers: [
 
              // sh 'docker run -exec -itd --name ${appname} ${appimage}:${apptag}'
             }
-            }
+            
         stage('Login and Push') {
                 withCredentials([usernamePassword(
                     credentialsId: 'docker-cred',
@@ -56,3 +56,4 @@ podTemplate(cloud: 'kubernetes', containers: [
             }
         }
     }
+  }
