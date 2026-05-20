@@ -16,12 +16,14 @@ podTemplate(containers: [
           }
         } // end checkout
 
-        stage('Hello') {
+        stage('Build and run docker image') {
             container('docker') {
               echo "Building docker image..."
-              sh "echo docker push $appimage"
+              docker build "-t ${appimage}:${apptag} ."
+              sleep 2
+              docker run -exec -itd --name ${appname} ${appimage}:${apptag}
             }
-        } //end hello
+        } //end build
     }
 }
 
