@@ -11,7 +11,7 @@ podTemplate(cloud: 'kubernetes', containers: [
     ),
      containerTemplate(
         name: 'docker', 
-        image: 'docker:26-dind', // Use the latest stable DinD image
+        image: 'docker:26-cli', // Use the latest stable DinD image
         privileged: true,      // Essential for Docker daemon to run
         args: '--storage-driver=vfs' // VFS is safest for K8s, though slower
     )], 
@@ -55,7 +55,7 @@ container('docker') {
                 }
             }
             stage('install helm') {
-            bash 'curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-4' 
+            sh 'curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-4' 
             chmod 700 get_helm.sh 
             ./get_helm.sh
             helm template ${appname} helm-charts/
