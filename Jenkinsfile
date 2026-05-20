@@ -1,5 +1,5 @@
-def appname = "hello-newapp"
-def repo = "elevy99927"  // Replace with your DockerHub username
+def appname = "test-app"
+def repo = "kfirbros123"  // Replace with your DockerHub username
 def appimage = "${repo}/${appname}"
 def apptag = "${env.BUILD_NUMBER}"
 
@@ -9,12 +9,12 @@ podTemplate(containers: [
   ])
   {
     node(POD_LABEL) {
-        stage('chackout') {
+        stage('checkout') {
             container('jnlp') {
             sh '/usr/bin/git config --global http.sslVerify false'
 	    checkout scm
           }
-        } // end chackout
+        } // end checkout
 
         stage('Hello') {
             container('docker') {
