@@ -21,7 +21,7 @@ podTemplate(containers: [
               echo "Building docker image..."
               docker build "-t ${appimage}:${apptag} ."
               sleep 2
-              sh 'docker run -exec -itd --name ${appname} ${appimage}:${apptag}'
+             // sh 'docker run -exec -itd --name ${appname} ${appimage}:${apptag}'
             }
         } //end build
     }
