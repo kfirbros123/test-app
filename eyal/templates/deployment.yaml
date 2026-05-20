@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-deploy
+spec:
+  selector: 
+    matchLabels:
+      {{- include "eyal.labels" . | nindent 6}}
+  replicas: {{ .Values.replicas }}   #from values
+  template:
+    metadata:
+      labels:
+        {{- include "eyal.labels" . | nindent 8}}
+    spec:
+      containers:
+      - name: {{ .Release.Name }} #from values
+        image: {{ .Values.image.repository }}:{{ .Values.image.tag }} #from values
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: {{ .Values.target_port }}

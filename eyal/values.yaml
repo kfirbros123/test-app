@@ -1,0 +1,15 @@
+
+
+# service_type should be NodePort, ClusterIP or LoadBalancer
+service_type: NodePort
+replicas: 1
+
+ingress:
+  enabled: false
+
+image:
+  repository: "kfire312/jb-practice"
+  tag: "latest"
+
+target_port: 8000
+port: 8000
