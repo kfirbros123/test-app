@@ -41,19 +41,18 @@ podTemplate(cloud: 'kubernetes', containers: [
             }
             }
         stage('Login and Push') {
-            steps {
                 withCredentials([usernamePassword(
                     credentialsId: 'docker-cred',
                     usernameVariable: 'DOCKER_USER',
                     passwordVariable: 'DOCKER_TOKEN'
                 )]) {
 
-                    sh """
-                        echo $DOCKER_TOKEN | docker login -u $DOCKER_USER --password-stdin
-                        docker push $appimage:$apptag
-                    """
-    }
-}
+                sh """
+                    echo $DOCKER_TOKEN | docker login -u $DOCKER_USER --password-stdin
+                    docker push $appimage:$apptag
+                """
+                    
+                }
+            }
         }
     }
-}
