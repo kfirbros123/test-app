@@ -19,20 +19,41 @@ podTemplate(cloud: 'kubernetes', containers: [
     emptyDirVolume(mountPath: '/var/lib/docker', memory: false) // Q: Why do we need this volume?
   ]) {
     node(POD_LABEL) {
-        stage('chackout') {
+        stage('checkout') {
             container('jnlp') {
             sh '/usr/bin/git config --global http.sslVerify false'
 	    checkout scm
           }
-        } // end chackout
+        } // end checkout
 
-        stage('Hello') {
+        stage('build docker image ${appimage}:${apptag}') {
             container('docker') {
+              echo "--------------------------------------------------------------"
               echo "Building docker image..."
-              sh " docker build -t $appimage:$apptag ."
-              sleep 2
+              echo "--------------------------------------------------------------"
+              sh " docker build -t ${appimage}:${apptag} ."
+              sleep 5
+              echo "--------------------------------------------------------------"
+              echo "Docker image built successfully: ${appimage}:${apptag}"
+              echo "--------------------------------------------------------------"
+
              // sh 'docker run -exec -itd --name ${appname} ${appimage}:${apptag}'
             }
             }
+        stage('Login and Push') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'docker-cred',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_TOKEN'
+                )]) {
+
+                    sh """
+                        echo $DOCKER_TOKEN | docker login -u $DOCKER_USER --password-stdin
+                        docker push $appimage:$apptag
+                    """
+    }
+}
+        }
     }
 }
