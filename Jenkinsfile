@@ -19,7 +19,7 @@ podTemplate(containers: [
         stage('Build and run docker image') {
             container('docker') {
               echo "Building docker image..."
-              sh 'docker build -t $appimage:$apptag .'
+              sh " docker build -t $appimage:$apptag ."
               sleep 2
              // sh 'docker run -exec -itd --name ${appname} ${appimage}:${apptag}'
             }
