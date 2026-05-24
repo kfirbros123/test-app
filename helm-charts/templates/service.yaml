@@ -1,14 +1,16 @@
 kind: Service     
 apiVersion: v1     
 metadata:
-  name: {{ .Release.Name }}-service #from RELEASE NAME
+  name: {{ .Release.Name }}-service 
+  labels:
+    {{- include "eyal.labels" . | nindent 4}}
 spec:
   selector:
     {{- include "eyal.labels" . | nindent 4}}
-  type: ClusterIP
+  type: {{.Values.service.type}}
 
   ports:         
   - name: http   
-    protocol: TCP
-    port: {{ .Values.port }} #from Values
-    targetPort: {{ .Values.target_port }}  #from values
+    protocol: {{ .Values.service.protocol }}
+    port: {{ .Values.port }}
+    targetPort: {{ .Values.target_port }}  
