@@ -98,7 +98,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: read
-      run: ls -R .
+      run: ls -R application
 
     # - name: checkout
     #   uses: actions/checkout@v6
