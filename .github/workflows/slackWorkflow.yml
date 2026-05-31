@@ -101,7 +101,7 @@ jobs:
         path: application/app1/dev/
 
     - name: list files
-      run: ls -R application
+      run: ls -Ra application/
 
     - name: commit and push
       run: |
