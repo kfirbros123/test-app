@@ -111,12 +111,11 @@ jobs:
           git remote set-url origin https://${{ secrets.GIT_TOKEN }}@github.com/kfirbros123/argo-gitops.git
           
           git add .
-          git branch
- 
+          git commit -m "generated"
+          git push -u origin application
 
 
-         # git commit -m "generated"
-          # git push
+
   push-template-to-repo:
     name: Push Template to Repo
     needs: helm-template
