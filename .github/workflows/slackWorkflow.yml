@@ -59,7 +59,7 @@ jobs:
       uses: actions/checkout@v4
       
     - name: Helm Template
-      run: helm template ./helm-charts test-app > test-app.yaml
+      run: helm template test-app ./helm-charts  > test-app.yaml
 
     - name: Print Helm Template
       run: cat test-app.yaml
