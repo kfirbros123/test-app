@@ -75,3 +75,33 @@ jobs:
       env:
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
         SLACK_MESSAGE: "Helm template created successfully"
+
+
+  pull-argocd:
+    needs: helm-template
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout tools repo
+      uses: actions/checkout@v6
+      with:
+       repository: kfirbros123/argo-gitops
+       path: application
+    - name: list files
+      run: ls -R application
+
+
+
+  push-template-to-repo:
+    name: Push Template to Repo
+    needs: helm-template
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - run: |
+          date > generated.txt
+          # Note: the following account information will not work on GHES
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "generated"
+          git push
