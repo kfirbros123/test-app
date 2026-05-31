@@ -118,6 +118,7 @@ jobs:
           git add .
           git commit -m "generated"
           git remote set-url origin https://x-access-token:${{ secrets.GIT_TOKEN }}@github.com/kfirbros123/argo-gitops.git
+          git config --global --unset-all http.https://github.com/.extraheader || true
           git push origin HEAD:application
 
 
