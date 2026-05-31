@@ -105,10 +105,7 @@ jobs:
       run: ls -Ra application/
 
 
-    - name: Clear git auth
-      run: |
-        git config --global --unset http.https://github.com/.extraheader || true
-
+     
     - name: commit and push
       run: |
           cd application
