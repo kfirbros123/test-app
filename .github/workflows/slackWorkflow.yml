@@ -85,6 +85,7 @@ jobs:
       uses: actions/checkout@v6
       with:
        repository: kfirbros123/argo-gitops
+       ref: application
        path: application
     - name: list files
       run: ls -R application
