@@ -95,6 +95,7 @@ jobs:
        repository: kfirbros123/argo-gitops
        ref: application
        path: application
+       presist-credentials: false
 
     - name: download artifact
       uses: actions/download-artifact@v4
