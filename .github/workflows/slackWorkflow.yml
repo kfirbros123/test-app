@@ -52,8 +52,12 @@ jobs:
   helm-template:
     name: Helm Template
     needs: docker-build-and-push
+    
     runs-on: ubuntu-latest
     steps:
+    - name: checkout
+      uses: actions/checkout@v4
+      
     - name: Helm Template
       run: helm template ./helm-charts test-app > test-app.yaml
 
