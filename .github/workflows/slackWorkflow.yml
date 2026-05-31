@@ -1,12 +1,12 @@
 on: push
 name: Slack Notification Demo
 jobs:
-  hello:
-    runs-on: ubuntu-latest
+  # hello:
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - name: Print message
-        run: echo "Hello GitHub Actions"
+  #   steps:
+  #     - name: Print message
+  #       run: echo "Hello GitHub Actions"
 
 
   docker-build-and-push:
@@ -27,14 +27,6 @@ jobs:
 
       - name: checkout
         uses: actions/checkout@v4
-      
-      - name: List files
-        run: |
-          pwd
-          ls -la
-          find . -name "*Docker*"
-      
-
       -
         name: Build and push
         uses: docker/build-push-action@v7
@@ -44,6 +36,16 @@ jobs:
           tags: |
             ${{ vars.DOCKERHUB_USERNAME }}/slack-demo:latest
             ${{ vars.DOCKERHUB_USERNAME }}/slack-demo:${{ github.sha }}
+
+
+  helm-template:
+    name: Helm Template
+    needs: docker-build-and-push
+    runs-on: ubuntu-latest
+    steps:
+    - name: Helm Template
+      run: helm template ./helm-charts  > test-app.yaml
+      run: cat test-app.yaml
 
   slackNotification:
     name: Slack Notification
