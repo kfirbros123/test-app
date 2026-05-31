@@ -64,6 +64,12 @@ jobs:
     - name: Print Helm Template
       run: cat "${{ github.event.repository.name }}".yaml
 
+    - name: Upload template as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: helm-template
+        path: "${{ github.event.repository.name }}".yaml
+
   slackNotification-helmTemplate:
     name: Slack Notification
     needs: helm-template
@@ -87,6 +93,12 @@ jobs:
        repository: kfirbros123/argo-gitops
        ref: application
        path: application
+
+    - name: download artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: helm-template   
+
     - name: list files
       run: ls -R application
 
