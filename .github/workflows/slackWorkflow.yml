@@ -108,11 +108,9 @@ jobs:
           cd application
           git config user.name "kfirbros123"
           git config user.email "bobytb143@gmail.com"
-          git remote set-url origin https://x-access-token:${{ secrets.GIT_TOKEN }}@github.com/kfirbros123/argo-gitops.git
-          
           git add .
           git commit -m "generated"
-          git push -u origin application
+          git push https://x-access-token:${{ secrets.GIT_TOKEN }}@github.com/kfirbros123/argo-gitops.git HEAD:application
 
 
 
