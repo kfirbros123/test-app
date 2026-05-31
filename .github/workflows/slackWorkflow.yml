@@ -37,19 +37,7 @@ jobs:
             ${{ vars.DOCKERHUB_USERNAME }}/slack-demo:latest
             ${{ vars.DOCKERHUB_USERNAME }}/slack-demo:${{ github.sha }}
 
-
-  helm-template:
-    name: Helm Template
-    needs: docker-build-and-push
-    runs-on: ubuntu-latest
-    steps:
-    - name: Helm Template
-      run: helm template ./helm-charts  > test-app.yaml
-      
-    - name: Print Helm Template
-      run: cat test-app.yaml
-
-  slackNotification:
+  slackNotification-dockerPush:
     name: Slack Notification
     needs: docker-build-and-push
     runs-on: ubuntu-latest
@@ -60,3 +48,26 @@ jobs:
       env:
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
         SLACK_MESSAGE: "Workflow ${{ github.workflow }} has completed. Tagged image: ${{ vars.DOCKERHUB_USERNAME }}/slack-demo:${{ github.sha }} Has been pushed"
+
+  helm-template:
+    name: Helm Template
+    needs: docker-build-and-push
+    runs-on: ubuntu-latest
+    steps:
+    - name: Helm Template
+      run: helm template ./helm-charts test-app > test-app.yaml
+
+    - name: Print Helm Template
+      run: cat test-app.yaml
+
+  slackNotification-helmTemplate:
+    name: Slack Notification
+    needs: helm-template
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Slack Notification
+      uses: rtCamp/action-slack-notify@v2
+      env:
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        SLACK_MESSAGE: "Helm template created successfully"
