@@ -83,7 +83,7 @@ jobs:
         SLACK_MESSAGE: "Helm template created successfully"
 
 
-  pull-argocd:
+  pull-commit-push-into-argocd:
     needs: helm-template
     runs-on: ubuntu-latest
     steps:
