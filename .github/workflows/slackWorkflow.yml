@@ -45,6 +45,8 @@ jobs:
     steps:
     - name: Helm Template
       run: helm template ./helm-charts  > test-app.yaml
+      
+    - name: Print Helm Template
       run: cat test-app.yaml
 
   slackNotification:
