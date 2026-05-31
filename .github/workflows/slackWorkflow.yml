@@ -1,0 +1,58 @@
+on: push
+name: Slack Notification Demo
+jobs:
+  hello:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Print message
+        run: echo "Hello GitHub Actions"
+
+
+  docker-build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v4
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v4
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: checkout
+        uses: actions/checkout@v4
+      
+      - name: List files
+        run: |
+          pwd
+          ls -la
+          find . -name "*Docker*"
+      
+
+      -
+        name: Build and push
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ vars.DOCKERHUB_USERNAME }}/slack-demo:latest
+            ${{ vars.DOCKERHUB_USERNAME }}/slack-demo:${{ github.sha }}
+
+  slackNotification:
+    name: Slack Notification
+    needs: docker-build-and-push
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Slack Notification
+      uses: rtCamp/action-slack-notify@v2
+      env:
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        SLACK_MESSAGE: "Workflow ${{ github.workflow }} has completed. Tagged image: ${{ vars.DOCKERHUB_USERNAME }}/slack-demo:${{ github.sha }} Has been pushed"
