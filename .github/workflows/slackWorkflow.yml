@@ -117,7 +117,7 @@ jobs:
 
   slackNotification-push-to-argocd-repo:
     name: Slack Notification
-    needs: helm-template
+    needs: pull-commit-push-into-argocd
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
