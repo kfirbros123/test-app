@@ -19,17 +19,16 @@ jobs:
 
       - name: Build image
         run: |
-          docker build -t exam-app:${{ github.sha }} .
+          docker build -t ${{ vars.DOCKERHUB_USERNAME }}/exam-app:${{ github.sha }} .
 
 #/////////////////////////////////////////////////////
 #//trivy scan on the built image
 #/////////////////////////////////////////////////////
-      - name: Build an image from Dockerfile
-        run: docker build -t docker.io/my-organization/my-app:${{ github.sha }} .
+
       - name: Run Trivy vulnerability scanner
         uses: aquasecurity/trivy-action@v0.36.0
         with:
-          image-ref: 'exam-app:${{ github.sha }}'
+          image-ref: '${{ vars.DOCKERHUB_USERNAME }}/exam-app:${{ github.sha }}'
           format: 'table'
           exit-code: '1'
           ignore-unfixed: true
@@ -40,7 +39,7 @@ jobs:
 #/////////////////////////////////////////////////////
       - name: Save image
         run: |
-          docker save exam-app:${{ github.sha }} -o exam-app-image.tar
+          docker save ${{ vars.DOCKERHUB_USERNAME }}/exam-app:${{ github.sha }} -o exam-app-image.tar
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -84,7 +83,7 @@ jobs:
       -
         name:  push image to Docker Hub
         run: |
-
+            docker tag exam-app:${{ github.sha }} ${{ vars.DOCKERHUB_USERNAME }}/exam-app:latest
             docker push ${{ vars.DOCKERHUB_USERNAME }}/exam-app:latest
             docker push ${{ vars.DOCKERHUB_USERNAME }}/exam-app:${{ github.sha }}
 
@@ -119,7 +118,8 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: helm-template
-        path: "${{ github.event.repository.name }}.yaml"
+        path: "${{ github.event.repository.name }}.yaml1"
+        #path: "${{ github.event.repository.name }}.yaml"
 
   slackNotification-helmTemplate:
     name: Slack Notification
