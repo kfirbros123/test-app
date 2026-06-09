@@ -83,7 +83,7 @@ jobs:
       -
         name:  push image to Docker Hub
         run: |
-            docker tag exam-app:${{ github.sha }} ${{ vars.DOCKERHUB_USERNAME }}/exam-app:latest
+            docker tag ${{ vars.DOCKERHUB_USERNAME }}/exam-app:${{ github.sha }} ${{ vars.DOCKERHUB_USERNAME }}/exam-app:latest
             docker push ${{ vars.DOCKERHUB_USERNAME }}/exam-app:latest
             docker push ${{ vars.DOCKERHUB_USERNAME }}/exam-app:${{ github.sha }}
 
