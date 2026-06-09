@@ -2,9 +2,70 @@ on: push
 name: CI/CD Workflow with Slack Notifications
 jobs:
 
-  docker-build-and-push:
+  shellcheck:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Run ShellCheck
+        uses: ludeeus/action-shellcheck@v1
+        with:
+          files: '**/*.py'
+
+  trivy-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        run: |
+          docker build -t exam-app:${{ github.sha }} .
+
+#/////////////////////////////////////////////////////
+#//trivy scan on the built image
+#/////////////////////////////////////////////////////
+      - name: Build an image from Dockerfile
+        run: docker build -t docker.io/my-organization/my-app:${{ github.sha }} .
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: 'exam-app:${{ github.sha }}'
+          format: 'table'
+          exit-code: '1'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+#/////////////////////////////////////////////////////
+#//after trivy save image for next step
+#/////////////////////////////////////////////////////
+      - name: Save image
+        run: |
+          docker save exam-app:${{ github.sha }} -o exam-app-image.tar
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-image
+          path: exam-app-image.tar
+
+
+  docker-build-and-push:
+    runs-on: ubuntu-latest
+    needs: [shellcheck, trivy-check]
+    steps:
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: docker-image
+
+      - name: Load image
+        run: |
+          docker load -i exam-app-image.tar
+
+      - name: Verify
+        run: |
+          docker images
       -
         name: Login to Docker Hub
         uses: docker/login-action@v4
@@ -27,8 +88,8 @@ jobs:
           context: .
           push: true
           tags: |
-            ${{ vars.DOCKERHUB_USERNAME }}/slack-demo:latest
-            ${{ vars.DOCKERHUB_USERNAME }}/slack-demo:${{ github.sha }}
+            ${{ vars.DOCKERHUB_USERNAME }}/exam-app:latest
+            ${{ vars.DOCKERHUB_USERNAME }}/exam-app:${{ github.sha }}
 
   slackNotification-dockerPush:
     name: Slack Notification
@@ -40,7 +101,7 @@ jobs:
       uses: rtCamp/action-slack-notify@v2
       env:
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-        SLACK_MESSAGE: "Workflow ${{ github.workflow }} has completed.\\n Tagged image: ${{ vars.DOCKERHUB_USERNAME }}/slack-demo:${{ github.sha }} Has been pushed"
+        SLACK_MESSAGE: "Workflow ${{ github.workflow }} has completed.\\n Tagged image: ${{ vars.DOCKERHUB_USERNAME }}/exam-app:${{ github.sha }} Has been pushed"
 
   helm-template:
     name: Helm Template
