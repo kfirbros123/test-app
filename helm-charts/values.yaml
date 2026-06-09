@@ -9,7 +9,7 @@ replicas: 1
 
 
 image:
-  repository: "kfire312/jb-practice"
+  repository: "kfire312/exam-app"
   tag: "latest"
   policy: IfNotPresent
 

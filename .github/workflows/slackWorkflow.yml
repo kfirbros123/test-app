@@ -118,8 +118,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: helm-template
-        path: "${{ github.event.repository.name }}.yaml1"
-        #path: "${{ github.event.repository.name }}.yaml"
+        path: "${{ github.event.repository.name }}.yaml"
 
   slackNotification-helmTemplate:
     name: Slack Notification
