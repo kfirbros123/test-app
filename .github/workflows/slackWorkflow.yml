@@ -82,14 +82,11 @@ jobs:
       - name: checkout
         uses: actions/checkout@v4
       -
-        name: Build and push
-        uses: docker/build-push-action@v7
-        with:
-          context: .
-          push: true
-          tags: |
-            ${{ vars.DOCKERHUB_USERNAME }}/exam-app:latest
-            ${{ vars.DOCKERHUB_USERNAME }}/exam-app:${{ github.sha }}
+        name:  push image to Docker Hub
+        run: |
+
+            docker push ${{ vars.DOCKERHUB_USERNAME }}/exam-app:latest
+            docker push ${{ vars.DOCKERHUB_USERNAME }}/exam-app:${{ github.sha }}
 
   slackNotification-dockerPush:
     name: Slack Notification
