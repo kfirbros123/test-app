@@ -1,5 +1,5 @@
 on: push
-name: CI/CD Workflow with Slack Notifications
+name: CI/CD Workflow with Slack Notification
 jobs:
 
   shellcheck:
@@ -87,18 +87,6 @@ jobs:
             docker push ${{ vars.DOCKERHUB_USERNAME }}/exam-app:latest
             docker push ${{ vars.DOCKERHUB_USERNAME }}/exam-app:${{ github.sha }}
 
-  slackNotification-dockerPush:
-    name: Slack Notification
-    needs: docker-build-and-push
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: Slack Notification
-      uses: rtCamp/action-slack-notify@v2
-      env:
-        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-        SLACK_MESSAGE: "Workflow ${{ github.workflow }} has completed.\\n Tagged image: ${{ vars.DOCKERHUB_USERNAME }}/exam-app:${{ github.sha }} Has been pushed"
-
   helm-template:
     name: Helm Template
     needs: docker-build-and-push
@@ -119,18 +107,6 @@ jobs:
       with:
         name: helm-template
         path: "${{ github.event.repository.name }}.yaml"
-
-  slackNotification-helmTemplate:
-    name: Slack Notification
-    needs: helm-template
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: Slack Notification
-      uses: rtCamp/action-slack-notify@v2
-      env:
-        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-        SLACK_MESSAGE: "Helm template created successfully"
 
 
   pull-commit-push-into-argocd:
@@ -165,7 +141,7 @@ jobs:
           git commit -m "generated"
           git push https://x-access-token:${{ secrets.GIT_TOKEN }}@github.com/kfirbros123/argo-gitops.git HEAD:application
 
-  slackNotification-push-to-argocd-repo:
+  slackNotification-finish-pipeline:
     name: Slack Notification
     needs: pull-commit-push-into-argocd
     runs-on: ubuntu-latest
@@ -175,4 +151,7 @@ jobs:
       uses: rtCamp/action-slack-notify@v2
       env:
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-        SLACK_MESSAGE: "Pushed helm template to argocd repo successfully"
+        SLACK_MESSAGE: |
+          "Workflow ${{ github.workflow }} has completed."
+          "Tagged image: ${{ vars.DOCKERHUB_USERNAME }}/exam-app:${{ github.sha }} Has been pushed"
+          "Helm template created and pushed to ArgoCD repo successfully."
