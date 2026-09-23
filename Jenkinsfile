@@ -29,7 +29,7 @@ container('docker') {
 
         stage('Linting') {
            parallel {
-                stage('YAML Lint') {
+                'YAML Lint': {
                   steps {
                      sh '''
                      apt-get update
@@ -39,7 +39,7 @@ container('docker') {
                  }
              }
 
-                stage('ShellCheck') {
+                'ShellCheck': {
                     steps {
                         sh '''
                         apt-get update
