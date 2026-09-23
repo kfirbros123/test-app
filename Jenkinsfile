@@ -26,6 +26,22 @@ podTemplate(cloud: 'kubernetes', containers: [
           }
         } // end checkout
 container('docker') {
+
+        stage('Linting') {
+           parallel {
+                stage('YAML Lint') {
+                  steps {
+                     sh 'yamllint .'
+                 }
+             }
+
+                stage('ShellCheck') {
+                    steps {
+                        sh 'shellcheck **/*.sh'
+                     }
+                }
+            }
+        }
         stage("build docker image ${appimage}:${apptag}") {
             
               echo "--------------------------------------------------------------"
@@ -40,6 +56,12 @@ container('docker') {
              // sh 'docker run -exec -itd --name ${appname} ${appimage}:${apptag}'
             }
             
+        stage('Docker Image scan') {
+            sh """
+                trivy image --severity CRITICAL --exit-code 1  ${appimage}:${apptag}
+               """
+        }    
+
         stage('Login and Push') {
                 withCredentials([usernamePassword(
                     credentialsId: 'docker-cred',
@@ -60,7 +82,9 @@ container('docker') {
                 curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-4 
                 chmod 700 get_helm.sh 
                 ./get_helm.sh
-                helm template ${appname} helm-charts/
+                echo  image.repository: ${appimage}:${apptag} > myvalues.yaml
+                helm template ${appname} helm-charts/ -f myvalues.yaml >test-app-template.yaml
+                echo test-app-template.yaml
                 """
         
         }
