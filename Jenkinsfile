@@ -28,28 +28,29 @@ podTemplate(cloud: 'kubernetes', containers: [
 container('docker') {
 
         stage('Linting') {
-           parallel {
-                'YAML Lint': {
-                  steps {
-                     sh '''
-                     apt-get update
-                     apt-get install -y yamllint
-                     yamllint .
-                     '''
-                 }
-             }
+           container('docker') {
 
-                'ShellCheck': {
-                    steps {
+              stage('Linting') {
+                  parallel(
+                    'YAML Lint': {
+                        sh '''
+                        apt-get update
+                        apt-get install -y yamllint
+                        yamllint .
+                        '''
+            },
+
+                    'ShellCheck': {
                         sh '''
                         apt-get update
                         apt-get install -y shellcheck
                         shellcheck **/*.sh
                         '''
-                     }
                 }
-            }
+            )
         }
+    }
+}
         stage("build docker image ${appimage}:${apptag}") {
             
               echo "--------------------------------------------------------------"
