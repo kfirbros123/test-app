@@ -26,7 +26,7 @@ podTemplate(cloud: 'kubernetes', containers: [
           }
         } // end checkout
 container('docker') {
-        stage('build docker image ${appimage}:${apptag}') {
+        stage("build docker image ${appimage}:${apptag}") {
             
               echo "--------------------------------------------------------------"
               echo "Building docker image..."
