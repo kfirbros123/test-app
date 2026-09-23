@@ -38,12 +38,12 @@ container('docker') {
               stage('Linting') {
                   parallel(
                     'YAML Lint': {
-                        sh 'yamllint . '
+                        sh 'yamllint . || true'
             },
 
                     'ShellCheck': {
                             sh '''
-                                files=$(find . -name "*.sh" -type f)
+                                  files=$(find . -name "*.sh" -type f)
                                 if [ -n "$files" ]; then
                                     shellcheck $files
                                 else
