@@ -26,7 +26,11 @@ podTemplate(cloud: 'kubernetes', containers: [
           }
         } // end checkout
 container('docker') {
-
+        stage('Install Tools') {
+        sh '''
+            apk add --no-cache yamllint shellcheck trivy
+        '''
+    }
         stage('Linting') {
            container('docker') {
 
