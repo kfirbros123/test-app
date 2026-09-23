@@ -42,7 +42,14 @@ container('docker') {
             },
 
                     'ShellCheck': {
-                        sh 'shellcheck **/*.sh'
+                            sh '''
+                                files=$(find . -name "*.sh" -type f)
+                                if [ -n "$files" ]; then
+                                    shellcheck $files
+                                else
+                                    echo "No shell scripts found"
+                                fi
+                                 '''
                 }
             )
         }
