@@ -31,13 +31,21 @@ container('docker') {
            parallel {
                 stage('YAML Lint') {
                   steps {
-                     sh 'yamllint .'
+                     sh '''
+                     apt-get update
+                     apt-get install -y yamllint
+                     yamllint .
+                     '''
                  }
              }
 
                 stage('ShellCheck') {
                     steps {
-                        sh 'shellcheck **/*.sh'
+                        sh '''
+                        apt-get update
+                        apt-get install -y shellcheck
+                        shellcheck **/*.sh
+                        '''
                      }
                 }
             }
@@ -58,6 +66,7 @@ container('docker') {
             
         stage('Docker Image scan') {
             sh """
+                sudo apt-get update && sudo apt-get install -y wget gnupg && wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor | sudo tee /usr/share/keyrings/trivy.gpg > /dev/null && echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb generic main" | sudo tee /etc/apt/sources.list.d/trivy.list > /dev/null && sudo apt-get update && sudo apt-get install -y trivy
                 trivy image --severity CRITICAL --exit-code 1  ${appimage}:${apptag}
                """
         }    
