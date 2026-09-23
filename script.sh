@@ -1,1 +1,2 @@
-this is a script
+#!/bin/bash
+touch kfir.txt
