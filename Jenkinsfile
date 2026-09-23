@@ -96,7 +96,7 @@ container('docker') {
                 ./get_helm.sh
                 echo  image.repository: ${appimage}:${apptag} > myvalues.yaml
                 helm template ${appname} helm-charts/ -f myvalues.yaml >test-app-template.yaml
-                echo test-app-template.yaml
+                cat test-app-template.yaml
                 """
         
         }
