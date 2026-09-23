@@ -28,7 +28,8 @@ podTemplate(cloud: 'kubernetes', containers: [
 container('docker') {
         stage('Install Tools') {
         sh '''
-            apk add --no-cache yamllint shellcheck trivy
+            apk add --no-cache yamllint shellcheck bash git curl
+            curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
         '''
     }
         stage('Linting') {
@@ -92,7 +93,6 @@ container('docker') {
             }
             stage('install helm') {
             sh """ 
-                apk add --no-cache curl bash
                 curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-4 
                 chmod 700 get_helm.sh 
                 ./get_helm.sh
