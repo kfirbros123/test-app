@@ -120,7 +120,7 @@ container('docker') {
                             cd argo-gitops
                             git add .
                             git commit -m "Update helm template for ${appname}"
-                            git push origin application
+                            git push https://${GIT_USER}:${GIT_TOKEN}@github.com/kfirbros123/argo-gitops.git HEAD:application
                         """
                     }
                 }
