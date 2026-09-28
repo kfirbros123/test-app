@@ -101,5 +101,26 @@ container('docker') {
         
         }
         }
+             stage('pull git repo and push helm template to git repo') {
+                container('docker') {
+                    withCredentials([usernamePassword(
+                        credentialsId: 'git-cred',
+                        usernameVariable: 'GIT_USER',
+                        passwordVariable: 'GIT_TOKEN'
+                    )]) {
+                        sh """
+                            git config --global user.email "$GIT_USER@jenkinsbot"
+                            git config --global user.name "JenkinsBot"
+                            git clone https://$GIT_USER:$GIT_TOKEN@github.com/$GIT_USER/argo-gitops.git
+                            cp test-app-template.yaml argo-gitops/test-app/test-app-template.yaml
+                            cd argo-gitops
+                            git add .
+                            git commit -m "Update helm template for ${appname}"
+                            git push origin main
+                        """
+                    }
+                }
+            }
+        }
     }
   }
