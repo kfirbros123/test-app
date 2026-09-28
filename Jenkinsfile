@@ -109,9 +109,13 @@ container('docker') {
                         passwordVariable: 'GIT_TOKEN'
                     )]) {
                         sh """
+                            ls -l
+                            echo "GIT_USER: $GIT_USER"
                             git config --global user.email "$GIT_USER@jenkinsbot"
                             git config --global user.name "JenkinsBot"
                             git clone https://$GIT_USER:$GIT_TOKEN@github.com/$GIT_USER/argo-gitops.git
+                            echo "Cloned argo-gitops repository"
+                            ls -l
                             cp test-app-template.yaml argo-gitops/test-app/test-app-template.yaml
                             cd argo-gitops
                             git add .
